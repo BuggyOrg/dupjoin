@@ -1,0 +1,83 @@
+{
+  "options": {
+    "directed": true,
+    "multigraph": false,
+    "compound": true
+  },
+  "nodes": [
+    {
+      "v": "A",
+      "value": {
+        "id": "A",
+        "version": "0.2.0",
+        "inputPorts": {
+          "input": "string"
+        },
+        "outputPorts": {},
+        "atomic": true
+      }
+    },
+    {
+      "v": "B",
+      "value": {
+        "id": "B",
+        "version": "0.2.0",
+        "inputPorts": {},
+        "outputPorts": {
+          "output": "string"
+        },
+        "atomic": true
+      }
+    },
+    {
+      "v": "C",
+      "value": {
+        "id": "C",
+        "version": "0.2.0",
+        "inputPorts": {},
+        "outputPorts": {
+          "output": "string"
+        },
+        "atomic": true
+      }
+    },
+    {
+      "v": "D",
+      "value": {
+        "id": "D",
+        "version": "0.2.0",
+        "inputPorts": {},
+        "outputPorts": {
+          "output": "string"
+        },
+        "atomic": true
+      }
+    }
+  ],
+  "edges": [
+    {
+      "v": "B",
+      "w": "A",
+      "value": {
+        "outPort": "input",
+        "inPort": "output"
+      }
+    },
+    {
+      "v": "C",
+      "w": "A",
+      "value": {
+        "outPort": "input",
+        "inPort": "output"
+      }
+    },
+    {
+      "v": "D",
+      "w": "A",
+      "value": {
+        "outPort": "input",
+        "inPort": "output"
+      }
+    }
+  ]
+}
