@@ -109,14 +109,14 @@ function createJoins (node, predecessors, from = 0, to) {
     [
       edge(predecessors[from], {node: jn.v, port: 'in1'}),
       edge(predecessors[to], {node: jn.v, port: 'in2'}),
-      edge({node: jn.v, port: 'in'}, node)
+      edge({node: jn.v, port: 'to'}, node)
     ]}
   } else {
     var d1 = createJoins({node: jn.v, port: 'in1'}, predecessors, from, from + Math.floor((from + to) / 2))
     var d2 = createJoins({node: jn.v, port: 'in2'}, predecessors, Math.ceil(from + Math.floor(from + to) / 2 + 1), to)
     return {
       nodes: _.concat(jn, d1.nodes, d2.nodes),
-      edges: _.concat(d1.edges, d2.edges, edge({node: jn.v, port: 'in'}, node))
+      edges: _.concat(d1.edges, d2.edges, edge({node: jn.v, port: 'to'}, node))
     }
   }
 }
