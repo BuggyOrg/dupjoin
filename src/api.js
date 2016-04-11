@@ -34,7 +34,7 @@ function duplicate (node, from, to) {
   return {
     v: `${node.node}_DUPLICATE_${from}_${to}`,
     value: {
-      meta: 'control/duplicate',
+      id: 'control/duplicate',
       version: '0.1.0',
       inputPorts: {
         in: 'int'
@@ -52,8 +52,8 @@ function join (node, from, to) {
   return {
     v: `${node.node}_JOIN_${from}_${to}`,
     value: {
-      meta: 'control/join',
-      version: '0.1.0',
+      id: 'control/join',
+      version: '0.1.1',
       inputPorts: {
         in1: 'int',
         in2: 'int'
@@ -61,7 +61,8 @@ function join (node, from, to) {
       outputPorts: {
         to: 'int'
       },
-      atomic: true
+      atomic: true,
+      specialForm: true
     }
   }
 }
