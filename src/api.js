@@ -44,7 +44,8 @@ function duplicate (node, from, to) {
         d2: 'int'
       },
       atomic: true
-    }
+    },
+    parent: node.parent
   }
 }
 
@@ -63,7 +64,8 @@ function join (node, from, to) {
       },
       atomic: true,
       specialForm: true
-    }
+    },
+    parent: node.parent
   }
 }
 
@@ -91,8 +93,8 @@ function createDuplicates (node, successors, from = 0, to) {
       edge(node, {node: dup.v, port: 'in'})
     ]}
   } else {
-    var d1 = createDuplicates({node: dup.v, port: 'd1'}, successors, from, from + Math.floor((from + to) / 2))
-    var d2 = createDuplicates({node: dup.v, port: 'd2'}, successors, Math.ceil(from + Math.floor(from + to) / 2 + 1), to)
+    var d1 = createDuplicates({node: dup.v, port: 'd1', parent: node.parent}, successors, from, from + Math.floor((from + to) / 2))
+    var d2 = createDuplicates({node: dup.v, port: 'd2', parent: node.parent}, successors, Math.ceil(from + Math.floor(from + to) / 2 + 1), to)
     return {
       nodes: _.concat(dup, d1.nodes, d2.nodes),
       edges: _.concat(d1.edges, d2.edges, edge(node, {node: dup.v, port: 'in'}))
@@ -113,12 +115,35 @@ function createJoins (node, predecessors, from = 0, to) {
       edge({node: jn.v, port: 'to'}, node)
     ]}
   } else {
-    var d1 = createJoins({node: jn.v, port: 'in1'}, predecessors, from, from + Math.floor((from + to) / 2))
-    var d2 = createJoins({node: jn.v, port: 'in2'}, predecessors, Math.ceil(from + Math.floor(from + to) / 2 + 1), to)
+    var d1 = createJoins({node: jn.v, port: 'in1', parent: node.parent}, predecessors, from, from + Math.floor((from + to) / 2))
+    var d2 = createJoins({node: jn.v, port: 'in2', parent: node.parent}, predecessors, Math.ceil(from + Math.floor(from + to) / 2 + 1), to)
     return {
       nodes: _.concat(jn, d1.nodes, d2.nodes),
       edges: _.concat(d1.edges, d2.edges, edge({node: jn.v, port: 'to'}, node))
     }
+  }
+}
+
+var mergeNodes = (acc, n) => {
+  return {
+    nodes: _.concat(acc.nodes, n.nodes),
+    edges: _.concat(acc.edges, n.edges)
+  }
+}
+
+function customizer (objValue, srcValue) {
+  if (_.isArray(objValue)) {
+    return objValue.concat(srcValue)
+  }
+}
+
+var parent = function (graph, outP, inP) {
+  if (graph.parent(outP) === graph.parent(inP)) {
+    return graph.parent(outP)
+  } else if (graph.parent(outP) === inP) {
+    return inP
+  } else {
+    return outP
   }
 }
 
@@ -131,13 +156,15 @@ export function normalize (graph) {
   var multiOuts = multipleOuts(graph)
   var multiIns = multipleIns(graph)
   var dupsOut = _.reduce(_.map(multiOuts, (e) => {
-    return createDuplicates({node: e[0].v, port: e[0].value.outPort}, walk.successorInPort(graph, e[0].v, e[0].value.outPort))
-  }), _.merge, {})
+    return createDuplicates({node: e[0].v, port: e[0].value.outPort, parent: parent(graph, e[0].v, _.last(e).w)},
+      walk.successorInPort(graph, e[0].v, e[0].value.outPort))
+  }), mergeNodes, {nodes: [], edges: []})
   var dupsIn = _.reduce(_.map(multiIns, (e) => {
-    return createJoins({node: e[0].w, port: e[0].value.inPort}, walk.predecessorOutPort(graph, e[0].w, e[0].value.inPort))
-  }), _.merge, {})
+    return createJoins({node: e[0].w, port: e[0].value.inPort, parent: graph.parent(e[0].v)},
+      walk.predecessorOutPort(graph, e[0].w, e[0].value.inPort))
+  }), mergeNodes, {nodes: [], edges: []})
 
-  var removeEdges = _.flatten(_.map(_.merge({}, multiOuts, multiIns), (v) => v))
+  var removeEdges = _.flatten(_.map(_.mergeWith({}, multiOuts, multiIns, customizer), (v) => v))
   var shouldRemove = (e) => _.find(removeEdges, (r) => {
     return r.v === e.v && r.w === e.w && r.value.outPort === e.value.outPort && r.value.inPort === e.value.inPort
   })
