@@ -35,13 +35,13 @@ function duplicate (node, from, to) {
     v: `${node.node}_DUPLICATE_${from}_${to}`,
     value: {
       id: 'control/duplicate',
-      version: '0.1.0',
+      version: '0.2.0',
       inputPorts: {
-        in: 'int'
+        in: 'generic'
       },
       outputPorts: {
-        d1: 'int',
-        d2: 'int'
+        d1: 'generic',
+        d2: 'generic'
       },
       atomic: true
     },
@@ -54,13 +54,13 @@ function join (node, from, to) {
     v: `${node.node}_JOIN_${from}_${to}`,
     value: {
       id: 'control/join',
-      version: '0.1.1',
+      version: '0.2.0',
       inputPorts: {
-        in1: 'int',
-        in2: 'int'
+        in1: 'generic',
+        in2: 'generic'
       },
       outputPorts: {
-        to: 'int'
+        to: 'generic'
       },
       atomic: true,
       specialForm: true
