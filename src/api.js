@@ -32,7 +32,7 @@ export function multipleIns (graph) {
 
 function duplicate (node, from, to) {
   return {
-    v: `${node.node}_DUPLICATE_${from}_${to}`,
+    v: `${node.node}_${node.port}_DUPLICATE_${from}_${to}`,
     value: {
       id: 'control/duplicate',
       version: '0.2.0',
@@ -51,7 +51,7 @@ function duplicate (node, from, to) {
 
 function join (node, from, to) {
   return {
-    v: `${node.node}_JOIN_${from}_${to}`,
+    v: `${node.node}_${node.port}_JOIN_${from}_${to}`,
     value: {
       id: 'control/join',
       version: '0.2.0',
