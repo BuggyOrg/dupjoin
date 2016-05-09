@@ -3,9 +3,6 @@
   "version": "0.1.4",
   "description": "Program that removes multiple out and in edges in a NG.",
   "main": "lib/api.js",
-  "bin": {
-    "buggy": "lib/cli.js"
-  },
   "scripts": {
     "test": "node node_modules/standard/bin/cmd.js src/**/*.js && node_modules/mocha/bin/mocha --compilers js:babel-register",
     "build": "babel src -d lib",
@@ -25,7 +22,7 @@
     "standard": "^6.0.8"
   },
   "dependencies": {
-    "@buggyorg/graphtools": "^0.2.6",
+    "@buggyorg/graphtools": "^0.2.12",
     "graphlib": "^2.1.0",
     "lodash": "^4.8.2"
   }

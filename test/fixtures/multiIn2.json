@@ -1,7 +1,7 @@
 {
   "options": {
     "directed": true,
-    "multigraph": false,
+    "multigraph": true,
     "compound": true
   },
   "nodes": [
