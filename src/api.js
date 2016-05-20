@@ -7,6 +7,7 @@ export function multipleOuts (graph) {
     .map((n) =>
       _(graph.outEdges(n))
         .map((e) => ({v: e.v, w: e.w, value: graph.edge(e)}))
+        .reject((e) => e.value.continuation)
         .map((e) => _.merge({}, e, {id: e.v + e.value.outPort}))
         .groupBy('id')
         .filter((n) => n.length > 1)
@@ -21,6 +22,7 @@ export function multipleIns (graph) {
     .map((n) =>
       _(graph.inEdges(n))
         .map((e) => ({v: e.v, w: e.w, value: graph.edge(e)}))
+        .reject((e) => e.value.continuation)
         .map((e) => _.merge({}, e, {id: e.w + e.value.inPort}))
         .groupBy('id')
         .filter((n) => n.length > 1)
@@ -94,7 +96,7 @@ function createDuplicates (node, successors, from = 0, to) {
     ]}
   } else {
     var d1 = createDuplicates({node: dup.v, port: 'd1', parent: node.parent}, successors, from, from + Math.floor((from + to) / 2))
-    var d2 = createDuplicates({node: dup.v, port: 'd2', parent: node.parent}, successors, Math.ceil(from + Math.floor(from + to) / 2 + 1), to)
+    var d2 = createDuplicates({node: dup.v, port: 'd2', parent: node.parent}, successors, Math.ceil(from + Math.floor((from + to) / 2) + 1), to)
     return {
       nodes: _.concat(dup, d1.nodes, d2.nodes),
       edges: _.concat(d1.edges, d2.edges, edge(node, {node: dup.v, port: 'in'}))

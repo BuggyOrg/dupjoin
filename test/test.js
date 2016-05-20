@@ -34,6 +34,12 @@ describe('Out edges deduplication', () => {
     expect(doublets[0]).to.have.length(3)
   })
 
+  it('should detect all inputs in the ackermann example', () => {
+    var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/ack.json', 'utf8')))
+    var multis = api.multipleOuts(graph)
+    expect(multis).to.have.length(2)
+  })
+
   it('normalizes double out edges', () => {
     var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/multiOut1.json', 'utf8')))
     var newGraph = api.normalize(graph)
@@ -60,6 +66,13 @@ describe('Out edges deduplication', () => {
     var newGraph = api.normalize(graph)
     var triplets = api.multipleIns(newGraph)
     expect(triplets).to.have.length(0)
+  })
+
+  it('should normalize the ackermann example correctly', () => {
+    var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/ack.json', 'utf8')))
+    var normAck = api.normalize(graph)
+    expect(normAck).to.be.ok
+    expect(normAck.edges()).to.have.length(38)
   })
 
   it('should detect multiple outputs in a real scenario', () => {
