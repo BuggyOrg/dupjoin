@@ -8,7 +8,7 @@ export function multipleOuts (graph) {
       _(graph.outEdges(n))
         .map((e) => ({v: e.v, w: e.w, value: graph.edge(e)}))
         .reject((e) => e.value.continuation)
-        .map((e) => _.merge({}, e, {id: e.v + e.value.outPort}))
+        .map((e) => _.merge({}, e, {id: e.v + e.value.outPort, type: utils.portType(graph, e.v, e.value.outPort)}))
         .groupBy('id')
         .filter((n) => n.length > 1)
         .value())
@@ -23,7 +23,7 @@ export function multipleIns (graph) {
       _(graph.inEdges(n))
         .map((e) => ({v: e.v, w: e.w, value: graph.edge(e)}))
         .reject((e) => e.value.continuation)
-        .map((e) => _.merge({}, e, {id: e.w + e.value.inPort}))
+        .map((e) => _.merge({}, e, {id: e.w + e.value.inPort, type: utils.portType(graph, e.w, e.value.inPort)}))
         .groupBy('id')
         .filter((n) => n.length > 1)
         .value())
@@ -33,42 +33,50 @@ export function multipleIns (graph) {
 }
 
 function duplicate (node, from, to) {
-  return {
+  var generic = (node.type && typeof (node.type) === 'string' && node.type.indexOf('generic') === -1) ? {
+    generic: true,
+    genericType: node.type
+  } : {}
+  return _.merge({
     v: `${node.node}_${node.port}_DUPLICATE_${from}_${to}`,
     value: {
       id: 'control/duplicate',
       version: '0.2.0',
       inputPorts: {
-        in: 'generic'
+        in: node.type
       },
       outputPorts: {
-        d1: 'generic',
-        d2: 'generic'
+        d1: node.type,
+        d2: node.type
       },
       atomic: true
     },
     parent: node.parent
-  }
+  }, {value: generic})
 }
 
 function join (node, from, to) {
-  return {
+  var generic = (node.type && typeof (node.type) === 'string' && node.type.indexOf('generic') === -1) ? {
+    generic: true,
+    genericType: node.type
+  } : {}
+  return _.merge({
     v: `${node.node}_${node.port}_JOIN_${from}_${to}`,
     value: {
       id: 'control/join',
       version: '0.2.0',
       inputPorts: {
-        in1: 'generic',
-        in2: 'generic'
+        in1: node.type,
+        in2: node.type
       },
       outputPorts: {
-        to: 'generic'
+        to: node.type
       },
       atomic: true,
       specialForm: true
     },
     parent: node.parent
-  }
+  }, {value: generic})
 }
 
 function edge (from, to) {
@@ -95,8 +103,8 @@ function createDuplicates (node, successors, from = 0, to) {
       edge(node, {node: dup.v, port: 'in'})
     ]}
   } else {
-    var d1 = createDuplicates({node: dup.v, port: 'd1', parent: node.parent}, successors, from, from + Math.floor((from + to) / 2))
-    var d2 = createDuplicates({node: dup.v, port: 'd2', parent: node.parent}, successors, Math.ceil(from + Math.floor((from + to) / 2) + 1), to)
+    var d1 = createDuplicates({node: dup.v, port: 'd1', parent: node.parent, type: node.type}, successors, from, from + Math.floor((from + to) / 2))
+    var d2 = createDuplicates({node: dup.v, port: 'd2', parent: node.parent, type: node.type}, successors, Math.ceil(from + Math.floor((from + to) / 2) + 1), to)
     return {
       nodes: _.concat(dup, d1.nodes, d2.nodes),
       edges: _.concat(d1.edges, d2.edges, edge(node, {node: dup.v, port: 'in'}))
@@ -117,8 +125,8 @@ function createJoins (node, predecessors, from = 0, to) {
       edge({node: jn.v, port: 'to'}, node)
     ]}
   } else {
-    var d1 = createJoins({node: jn.v, port: 'in1', parent: node.parent}, predecessors, from, from + Math.floor((from + to) / 2))
-    var d2 = createJoins({node: jn.v, port: 'in2', parent: node.parent}, predecessors, Math.ceil(from + Math.floor(from + to) / 2 + 1), to)
+    var d1 = createJoins({node: jn.v, port: 'in1', parent: node.parent, type: node.type}, predecessors, from, from + Math.floor((from + to) / 2))
+    var d2 = createJoins({node: jn.v, port: 'in2', parent: node.parent, type: node.type}, predecessors, Math.ceil(from + Math.floor(from + to) / 2 + 1), to)
     return {
       nodes: _.concat(jn, d1.nodes, d2.nodes),
       edges: _.concat(d1.edges, d2.edges, edge({node: jn.v, port: 'to'}, node))
@@ -158,11 +166,11 @@ export function normalize (graph) {
   var multiOuts = multipleOuts(graph)
   var multiIns = multipleIns(graph)
   var dupsOut = _.reduce(_.map(multiOuts, (e) => {
-    return createDuplicates({node: e[0].v, port: e[0].value.outPort, parent: parent(graph, e[0].v, _.last(e).w)},
+    return createDuplicates({node: e[0].v, port: e[0].value.outPort, parent: parent(graph, e[0].v, _.last(e).w), type: e[0].type},
       walk.adjacentNode(graph, e[0].v, e[0].value.outPort, walk.successor))
   }), mergeNodes, {nodes: [], edges: []})
   var dupsIn = _.reduce(_.map(multiIns, (e) => {
-    return createJoins({node: e[0].w, port: e[0].value.inPort, parent: graph.parent(e[0].v)},
+    return createJoins({node: e[0].w, port: e[0].value.inPort, parent: graph.parent(e[0].v), type: e[0].type},
       walk.adjacentNode(graph, e[0].w, e[0].value.inPort, walk.predecessor))
   }), mergeNodes, {nodes: [], edges: []})
 

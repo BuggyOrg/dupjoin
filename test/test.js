@@ -12,6 +12,7 @@ describe('Out edges deduplication', () => {
     var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/multiOut1.json', 'utf8')))
     var doublets = api.multipleOuts(graph)
     expect(doublets).to.have.length(1)
+    expect(doublets[0][0].type).to.equal('string')
   })
 
   it('should detect multiple outputs from one port', () => {
@@ -19,6 +20,7 @@ describe('Out edges deduplication', () => {
     var doublets = api.multipleOuts(graph)
     expect(doublets).to.have.length(1)
     expect(doublets[0]).to.have.length(3)
+    expect(doublets[0][0].type).to.equal('string')
   })
 
   it('should detect two inputs from one port', () => {
@@ -66,6 +68,14 @@ describe('Out edges deduplication', () => {
     var newGraph = api.normalize(graph)
     var triplets = api.multipleIns(newGraph)
     expect(triplets).to.have.length(0)
+  })
+
+  it('assigns the edge type to the duplicate nodes', () => {
+    var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/multiOut2.json', 'utf8')))
+    var newGraph = api.normalize(graph)
+    expect(newGraph.node('A_output_DUPLICATE_0_2').inputPorts['in']).to.equal('string')
+    expect(newGraph.node('A_output_DUPLICATE_0_2').generic).to.be.true
+    expect(newGraph.node('A_output_DUPLICATE_0_2').genericType).to.equal('string')
   })
 
   it('should normalize the ackermann example correctly', () => {
