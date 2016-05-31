@@ -34,7 +34,7 @@ export function multipleIns (graph) {
 
 function duplicate (node, from, to) {
   var generic = (node.type && typeof (node.type) === 'string' && node.type.indexOf('generic') === -1) ? {
-    generic: true,
+    isGeneric: true,
     genericType: node.type
   } : {}
   return _.merge({
@@ -52,12 +52,12 @@ function duplicate (node, from, to) {
       atomic: true
     },
     parent: node.parent
-  }, {value: generic})
+  }, {value: {settings: generic}})
 }
 
 function join (node, from, to) {
   var generic = (node.type && typeof (node.type) === 'string' && node.type.indexOf('generic') === -1) ? {
-    generic: true,
+    isGeneric: true,
     genericType: node.type
   } : {}
   return _.merge({
@@ -76,7 +76,7 @@ function join (node, from, to) {
       specialForm: true
     },
     parent: node.parent
-  }, {value: generic})
+  }, {value: {settings: generic}})
 }
 
 function edge (from, to) {
