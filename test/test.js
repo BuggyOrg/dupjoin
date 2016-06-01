@@ -74,8 +74,8 @@ describe('Out edges deduplication', () => {
     var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/multiOut2.json', 'utf8')))
     var newGraph = api.normalize(graph)
     expect(newGraph.node('A_output_DUPLICATE_0_2').inputPorts['in']).to.equal('string')
-    expect(newGraph.node('A_output_DUPLICATE_0_2').generic).to.be.true
-    expect(newGraph.node('A_output_DUPLICATE_0_2').genericType).to.equal('string')
+    expect(newGraph.node('A_output_DUPLICATE_0_2').settings.isGeneric).to.be.true
+    expect(newGraph.node('A_output_DUPLICATE_0_2').settings.genericType).to.equal('string')
   })
 
   it('should normalize the ackermann example correctly', () => {
