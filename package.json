@@ -1,6 +1,6 @@
 {
   "name": "@buggyorg/dupjoin",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "description": "Program that removes multiple out and in edges in a NG.",
   "main": "lib/api.js",
   "scripts": {
