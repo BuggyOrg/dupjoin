@@ -103,8 +103,8 @@ function createDuplicates (node, successors, from = 0, to) {
       edge(node, {node: dup.v, port: 'in'})
     ]}
   } else {
-    var d1 = createDuplicates({node: dup.v, port: 'd1', parent: node.parent, type: node.type}, successors, from, from + Math.floor((from + to) / 2))
-    var d2 = createDuplicates({node: dup.v, port: 'd2', parent: node.parent, type: node.type}, successors, Math.ceil(from + Math.floor((from + to) / 2) + 1), to)
+    var d1 = createDuplicates({node: dup.v, port: 'd1', parent: node.parent, type: node.type}, successors, from, Math.floor((from + to) / 2))
+    var d2 = createDuplicates({node: dup.v, port: 'd2', parent: node.parent, type: node.type}, successors, Math.floor((from + to) / 2) + 1, to)
     return {
       nodes: _.concat(dup, d1.nodes, d2.nodes),
       edges: _.concat(d1.edges, d2.edges, edge(node, {node: dup.v, port: 'in'}))
@@ -125,8 +125,8 @@ function createJoins (node, predecessors, from = 0, to) {
       edge({node: jn.v, port: 'to'}, node)
     ]}
   } else {
-    var d1 = createJoins({node: jn.v, port: 'in1', parent: node.parent, type: node.type}, predecessors, from, from + Math.floor((from + to) / 2))
-    var d2 = createJoins({node: jn.v, port: 'in2', parent: node.parent, type: node.type}, predecessors, Math.ceil(from + Math.floor(from + to) / 2 + 1), to)
+    var d1 = createJoins({node: jn.v, port: 'in1', parent: node.parent, type: node.type}, predecessors, from, Math.floor((from + to) / 2))
+    var d2 = createJoins({node: jn.v, port: 'in2', parent: node.parent, type: node.type}, predecessors, Math.floor(from + to) / 2 + 1, to)
     return {
       nodes: _.concat(jn, d1.nodes, d2.nodes),
       edges: _.concat(d1.edges, d2.edges, edge({node: jn.v, port: 'to'}, node))
