@@ -41,7 +41,7 @@ function duplicate (node, from, to) {
     v: `${node.node}_${node.port}_DUPLICATE_${from}_${to}`,
     value: {
       id: 'control/duplicate',
-      version: '0.2.0',
+      version: '0.3.0',
       inputPorts: {
         in: node.type
       },
@@ -49,7 +49,10 @@ function duplicate (node, from, to) {
         d1: node.type,
         d2: node.type
       },
-      atomic: true
+      atomic: true,
+      settings: {
+        argumentOrdering: ['in', 'd1', 'd2']
+      }
     },
     parent: node.parent
   }, {value: {settings: generic}})
@@ -64,7 +67,7 @@ function join (node, from, to) {
     v: `${node.node}_${node.port}_JOIN_${from}_${to}`,
     value: {
       id: 'control/join',
-      version: '0.2.0',
+      version: '0.3.0',
       inputPorts: {
         in1: node.type,
         in2: node.type
@@ -73,7 +76,10 @@ function join (node, from, to) {
         to: node.type
       },
       atomic: true,
-      specialForm: true
+      specialForm: true,
+      settings: {
+        argumentOrdering: ['in1', 'in2', 'to']
+      }
     },
     parent: node.parent
   }, {value: {settings: generic}})
