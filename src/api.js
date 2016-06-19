@@ -171,13 +171,17 @@ export function normalize (graph) {
   var editGraph = utils.edit(graph)
   var multiOuts = multipleOuts(graph)
   var multiIns = multipleIns(graph)
-  var dupsOut = _.reduce(_.map(multiOuts, (e) => {
-    return createDuplicates({node: e[0].v, port: e[0].value.outPort, parent: parent(graph, e[0].v, _.last(e).w), type: e[0].type},
-      walk.adjacentNode(graph, e[0].v, e[0].value.outPort, walk.successor))
-  }), mergeNodes, {nodes: [], edges: []})
+  var dupsOut = _.reduce(_.compact(_.map(multiOuts, (e) => {
+    if (e[0].value.outPort) {
+      return createDuplicates({node: e[0].v, port: e[0].value.outPort, parent: parent(graph, e[0].v, _.last(e).w), type: e[0].type},
+        walk.adjacentNode(graph, e[0].v, e[0].value.outPort, walk.successor))
+    }
+  })), mergeNodes, {nodes: [], edges: []})
   var dupsIn = _.reduce(_.map(multiIns, (e) => {
-    return createJoins({node: e[0].w, port: e[0].value.inPort, parent: graph.parent(e[0].v), type: e[0].type},
-      walk.adjacentNode(graph, e[0].w, e[0].value.inPort, walk.predecessor))
+    if (e[0].value.outPort) {
+      return createJoins({node: e[0].w, port: e[0].value.inPort, parent: graph.parent(e[0].v), type: e[0].type},
+        walk.adjacentNode(graph, e[0].w, e[0].value.inPort, walk.predecessor))
+    }
   }), mergeNodes, {nodes: [], edges: []})
 
   var removeEdges = _.flatten(_.map(_.mergeWith({}, multiOuts, multiIns, customizer), (v) => v))
