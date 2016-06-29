@@ -22,7 +22,7 @@
     "standard": "^6.0.8"
   },
   "dependencies": {
-    "@buggyorg/graphtools": "^0.2.17",
+    "@buggyorg/graphtools": "^0.2.22",
     "graphlib": "^2.1.0",
     "lodash": "^4.8.2"
   }

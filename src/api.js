@@ -1,5 +1,5 @@
 
-import {utils, walk} from '@buggyorg/graphtools'
+import {utils, walk, graph as graphAPI} from '@buggyorg/graphtools'
 import _ from 'lodash'
 
 export function multipleOuts (graph) {
@@ -168,7 +168,7 @@ export function normalize (graph) {
     throw new Error('Cannot normalize non NPG.')
   }
 
-  var editGraph = utils.edit(graph)
+  var editGraph = graphAPI.toJSON(graph)
   var multiOuts = multipleOuts(graph)
   var multiIns = multipleIns(graph)
   var dupsOut = _.reduce(_.compact(_.map(multiOuts, (e) => {
@@ -192,5 +192,5 @@ export function normalize (graph) {
 
   editGraph.nodes = _.compact(_.concat(editGraph.nodes, dupsIn.nodes, dupsOut.nodes))
   editGraph.edges = _.compact(_.concat(oldEdges, dupsIn.edges, dupsOut.edges))
-  return utils.finalize(editGraph)
+  return graphAPI.importJSON(editGraph)
 }
