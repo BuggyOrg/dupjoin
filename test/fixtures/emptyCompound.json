@@ -28,6 +28,30 @@
         "branch": "nop_1",
         "recursive": false
       }
+    },
+    {
+      "v": "stdout_0",
+      "value": {
+        "id": "io/stdout",
+        "version": "0.3.0",
+        "inputPorts": {
+          "input": "string"
+        },
+        "outputPorts": {},
+        "settings": {
+          "sideEffects": true,
+          "argumentOrdering": [
+            "input"
+          ]
+        },
+        "atomic": true,
+        "isSink": true,
+        "path": [],
+        "branchPath": "stdout_0",
+        "branch": "stdout_0",
+        "name": "stdout_0",
+        "recursive": false
+      }
     }
   ],
   "edges": [
@@ -37,6 +61,14 @@
       "value": {
         "outPort": "in",
         "inPort": "out"
+      }
+    },
+    {
+      "v": "nop_1",
+      "w": "stdout_0",
+      "value": {
+        "outPort": "out",
+        "inPort": "input"
       }
     }
   ]

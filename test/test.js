@@ -109,8 +109,8 @@ describe('Out edges deduplication', () => {
     var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/nop.json', 'utf8')))
     var norm = api.normalize(graph)
     expect(walk.successor(norm, 'a_1', 'y')).to.have.length(1)
-    expect(norm.node(walk.successor(norm, 'a_1', 'y').node).id).to.equal('control/consume')
-    expect(norm.node(walk.successor(norm, 'a_1', 'y').node).inputPorts.all).to.equal('number')
+    expect(norm.node(walk.successor(norm, 'a_1', 'y')[0].node).id).to.equal('control/consume')
+    expect(norm.node(walk.successor(norm, 'a_1', 'y')[0].node).inputPorts.all).to.equal('number')
   })
 
   it('rewrites edges that go right through compound nodes', () => {
@@ -118,12 +118,15 @@ describe('Out edges deduplication', () => {
     var newGraph = api.normalize(graph)
     var idNode = newGraph.nodes().filter((n) => newGraph.node(n).id === 'std/id')[0]
 
-    expect(newGraph.edges()).to.have.length(2)
+    expect(newGraph.edges()).to.have.length(3)
     expect(newGraph.parent(idNode)).to.equal('nop_1')
 
-    expect(newGraph.edge('nop_1', idNode).outPort).to.equal('in')
-    expect(newGraph.edge('nop_1', idNode).inPort).to.equal('input')
-    expect(newGraph.edge(idNode, 'nop_1').outPort).to.equal('output')
-    expect(newGraph.edge(idNode, 'nop_1').inPort).to.equal('out')
+    const edge1 = newGraph.edge(newGraph.edges().filter((e) => e.v === 'nop_1' && e.w === idNode)[0])
+    const edge2 = newGraph.edge(newGraph.edges().filter((e) => e.v === idNode && e.w === 'nop_1')[0])
+
+    expect(edge1.outPort).to.equal('in')
+    expect(edge1.inPort).to.equal('input')
+    expect(edge2.outPort).to.equal('output')
+    expect(edge2.inPort).to.equal('out')
   })
 })

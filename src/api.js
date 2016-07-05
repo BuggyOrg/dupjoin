@@ -163,6 +163,14 @@ var parent = function (graph, outP, inP) {
   }
 }
 
+function createEdge (graph, source, target) {
+  const edgeName = `${source.node}@${source.port}_to_${target.node}@${target.port}`
+  graph.setEdge(source.node, target.node, {
+    outPort: source.port,
+    inPort: target.port
+  }, edgeName)
+}
+
 /**
  * Inserts std/id nodes whenever an edge goes right through a compound node.
  * @param jsonGraph {object} network port graph as jsonGraph
@@ -191,9 +199,52 @@ function rewriteEdgesThroughCompoundNodes (jsonGraph) {
         }
       })
       graph.setParent(idNode, e.v)
-      graph.setEdge(e.v, idNode, { outPort: edge.outPort, inPort: 'input' })
-      graph.setEdge(idNode, e.v, { outPort: 'output', inPort: edge.inPort })
+      createEdge(graph, { node: e.v, port: edge.outPort }, { node: idNode, port: 'input' })
+      createEdge(graph, { node: idNode, port: 'output' }, { node: e.v, port: edge.inPort })
       graph.removeEdge(e)
+    }
+  })
+
+  return graphAPI.toJSON(graph)
+}
+
+function addConsumeForUnusedPorts (jsonGraph) {
+  const graph = graphAPI.importJSON(jsonGraph)
+
+  graph.nodes().forEach((n) => {
+    const node = graph.node(n)
+
+    Object.keys(node.outputPorts).forEach((port) => {
+      if (walk.successor(graph, n, port).length === 0) {
+        const dummyNode = `${n}_consume_dummy_${port}`
+        graph.setNode(dummyNode, {
+          id: 'control/consume',
+          version: '0.2.0',
+          atomic: true,
+          inputPorts: {
+            all: node.outputPorts[port]
+          }
+        })
+        createEdge(graph, { node: n, port }, { node: dummyNode, port: 'all' })
+      }
+    })
+
+    if (!node.atomic && !node.recursive) {
+      Object.keys(node.inputPorts).forEach((port) => {
+        if (walk.successor(graph, n, port).length === 0) {
+          const dummyNode = `${n}_consume_dummy_${port}`
+          graph.setNode(dummyNode, {
+            id: 'control/consume',
+            version: '0.2.0',
+            atomic: true,
+            inputPorts: {
+              all: node.inputPorts[port]
+            }
+          })
+          graph.setParent(dummyNode, n)
+          createEdge(graph, { node: n, port }, { node: dummyNode, port: 'all' })
+        }
+      })
     }
   })
 
@@ -231,6 +282,7 @@ export function normalize (graph) {
   editGraph.edges = _.compact(_.concat(oldEdges, dupsIn.edges, dupsOut.edges))
 
   editGraph = rewriteEdgesThroughCompoundNodes(editGraph)
+  editGraph = addConsumeForUnusedPorts(editGraph)
 
   return graphAPI.importJSON(editGraph)
 }
