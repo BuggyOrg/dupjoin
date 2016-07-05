@@ -105,11 +105,24 @@ describe('Out edges deduplication', () => {
     expect(doublets).to.have.length(2)
   })
 
-  it.only('should add a nop for every unused port', () => {
+  it('should add a consume node for every unused port', () => {
     var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/nop.json', 'utf8')))
     var norm = api.normalize(graph)
     expect(walk.successor(norm, 'a_1', 'y')).to.have.length(1)
     expect(norm.node(walk.successor(norm, 'a_1', 'y').node).id).to.equal('control/consume')
   })
-})
 
+  it('rewrites edges that go right through compound nodes', () => {
+    var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/emptyCompound.json', 'utf8')))
+    var newGraph = api.normalize(graph)
+    var idNode = newGraph.nodes().filter((n) => newGraph.node(n).id === 'std/id')[0]
+
+    expect(newGraph.edges()).to.have.length(2)
+    expect(newGraph.parent(idNode)).to.equal('nop_1')
+
+    expect(newGraph.edge('nop_1', idNode).outPort).to.equal('in')
+    expect(newGraph.edge('nop_1', idNode).inPort).to.equal('input')
+    expect(newGraph.edge(idNode, 'nop_1').outPort).to.equal('output')
+    expect(newGraph.edge(idNode, 'nop_1').inPort).to.equal('out')
+  })
+})

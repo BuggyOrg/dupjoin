@@ -1,0 +1,43 @@
+{
+  "options": {
+    "directed": true,
+    "multigraph": true,
+    "compound": true
+  },
+  "nodes": [
+    {
+      "v": "nop_1",
+      "value": {
+        "id": "nop",
+        "inputPorts": {
+          "in": "generic"
+        },
+        "outputPorts": {
+          "out": "generic"
+        },
+        "settings": {
+          "argumentOrdering": [
+            "in",
+            "out"
+          ]
+        },
+        "name": "nop_1",
+        "externalComponent": true,
+        "path": [],
+        "branchPath": "nop_1",
+        "branch": "nop_1",
+        "recursive": false
+      }
+    }
+  ],
+  "edges": [
+    {
+      "v": "nop_1",
+      "w": "nop_1",
+      "value": {
+        "outPort": "in",
+        "inPort": "out"
+      }
+    }
+  ]
+}

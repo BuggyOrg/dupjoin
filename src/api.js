@@ -163,6 +163,43 @@ var parent = function (graph, outP, inP) {
   }
 }
 
+/**
+ * Inserts std/id nodes whenever an edge goes right through a compound node.
+ * @param jsonGraph {object} network port graph as jsonGraph
+ * @returns {object} NPG as json
+ */
+function rewriteEdgesThroughCompoundNodes (jsonGraph) {
+  const graph = graphAPI.importJSON(jsonGraph)
+
+  graph.edges().forEach((e) => {
+    if (e.v === e.w) {
+      const edge = graph.edge(e)
+      const compound = graph.node(e.v)
+      const idNode = `id_${e.v}@${edge.outPort}_to_${e.w}@${edge.inPort}`
+      graph.setNode(idNode, {
+        id: 'std/id',
+        version: '0.1.2',
+        atomic: true,
+        inputPorts: {
+          input: compound.outputPorts[edge.inPort]
+        },
+        outputPorts: {
+          output: compound.outputPorts[edge.outPort]
+        },
+        settings: {
+          argumentOrdering: ['input', 'output']
+        }
+      })
+      graph.setParent(idNode, e.v)
+      graph.setEdge(e.v, idNode, { outPort: edge.outPort, inPort: 'input' })
+      graph.setEdge(idNode, e.v, { outPort: 'output', inPort: edge.inPort })
+      graph.removeEdge(e)
+    }
+  })
+
+  return graphAPI.toJSON(graph)
+}
+
 export function normalize (graph) {
   if (!utils.isNPG(graph)) {
     throw new Error('Cannot normalize non NPG.')
@@ -192,5 +229,8 @@ export function normalize (graph) {
 
   editGraph.nodes = _.compact(_.concat(editGraph.nodes, dupsIn.nodes, dupsOut.nodes))
   editGraph.edges = _.compact(_.concat(oldEdges, dupsIn.edges, dupsOut.edges))
+
+  editGraph = rewriteEdgesThroughCompoundNodes(editGraph)
+
   return graphAPI.importJSON(editGraph)
 }
