@@ -110,6 +110,7 @@ describe('Out edges deduplication', () => {
     var norm = api.normalize(graph)
     expect(walk.successor(norm, 'a_1', 'y')).to.have.length(1)
     expect(norm.node(walk.successor(norm, 'a_1', 'y')[0].node).id).to.equal('control/consume')
+    expect(norm.node(walk.successor(norm, 'a_1', 'y')[0].node).settings.argumentOrdering).to.eql(['all'])
     expect(norm.node(walk.successor(norm, 'a_1', 'y')[0].node).inputPorts.all).to.equal('number')
   })
 

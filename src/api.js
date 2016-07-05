@@ -223,6 +223,9 @@ function addConsumeForUnusedPorts (jsonGraph) {
           atomic: true,
           inputPorts: {
             all: node.outputPorts[port]
+          },
+          settings: {
+            argumentOrdering: ['all']
           }
         })
         createEdge(graph, { node: n, port }, { node: dummyNode, port: 'all' })
@@ -239,6 +242,9 @@ function addConsumeForUnusedPorts (jsonGraph) {
             atomic: true,
             inputPorts: {
               all: node.inputPorts[port]
+            },
+            settings: {
+              argumentOrdering: ['all']
             }
           })
           graph.setParent(dummyNode, n)
