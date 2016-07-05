@@ -110,6 +110,7 @@ describe('Out edges deduplication', () => {
     var norm = api.normalize(graph)
     expect(walk.successor(norm, 'a_1', 'y')).to.have.length(1)
     expect(norm.node(walk.successor(norm, 'a_1', 'y').node).id).to.equal('control/consume')
+    expect(norm.node(walk.successor(norm, 'a_1', 'y').node).inputPorts.all).to.equal('number')
   })
 
   it('rewrites edges that go right through compound nodes', () => {
