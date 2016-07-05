@@ -208,29 +208,35 @@ function rewriteEdgesThroughCompoundNodes (jsonGraph) {
   return graphAPI.toJSON(graph)
 }
 
+function isLambda (graph, n) {
+  return n && graph.node(n) && graph.node(n).id === 'functional/lambda'
+}
+
 function addConsumeForUnusedPorts (jsonGraph) {
   const graph = graphAPI.importJSON(jsonGraph)
 
   graph.nodes().forEach((n) => {
     const node = graph.node(n)
 
-    Object.keys(node.outputPorts).forEach((port) => {
-      if (walk.successor(graph, n, port).length === 0) {
-        const dummyNode = `${n}_consume_dummy_${port}`
-        graph.setNode(dummyNode, {
-          id: 'control/consume',
-          version: '0.2.0',
-          atomic: true,
-          inputPorts: {
-            all: node.outputPorts[port]
-          },
-          settings: {
-            argumentOrdering: ['all']
-          }
-        })
-        createEdge(graph, { node: n, port }, { node: dummyNode, port: 'all' })
-      }
-    })
+    if (!isLambda(graph, graph.parent(n))) {
+      Object.keys(node.outputPorts).forEach((port) => {
+        if (walk.successor(graph, n, port).length === 0) {
+          const dummyNode = `${n}_consume_dummy_${port}`
+          graph.setNode(dummyNode, {
+            id: 'control/consume',
+            version: '0.2.0',
+            atomic: true,
+            inputPorts: {
+              all: node.outputPorts[port]
+            },
+            settings: {
+              argumentOrdering: ['all']
+            }
+          })
+          createEdge(graph, { node: n, port }, { node: dummyNode, port: 'all' })
+        }
+      })
+    }
 
     if (!node.atomic && !node.recursive) {
       Object.keys(node.inputPorts).forEach((port) => {
