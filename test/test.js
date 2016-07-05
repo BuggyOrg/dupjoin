@@ -2,6 +2,7 @@
 import chai from 'chai'
 import fs from 'fs'
 import graphlib from 'graphlib'
+import {walk} from '@buggyorg/graphtools'
 import * as api from '../src/api'
 // import _ from 'lodash'
 
@@ -102,6 +103,13 @@ describe('Out edges deduplication', () => {
     var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/fac.json', 'utf8')))
     var doublets = api.multipleIns(graph)
     expect(doublets).to.have.length(2)
+  })
+
+  it.only('should add a nop for every unused port', () => {
+    var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/nop.json', 'utf8')))
+    var norm = api.normalize(graph)
+    expect(walk.successor(norm, 'a_1', 'y')).to.have.length(1)
+    expect(norm.node(walk.successor(norm, 'a_1', 'y').node).id).to.equal('control/consume')
   })
 })
 
