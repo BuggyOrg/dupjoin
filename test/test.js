@@ -130,4 +130,10 @@ describe('Out edges deduplication', () => {
     expect(edge2.outPort).to.equal('output')
     expect(edge2.inPort).to.equal('out')
   })
+
+  it('does not add nop nodes after lambda implementations', () => {
+    var graph = graphlib.json.read(JSON.parse(fs.readFileSync('test/fixtures/lambda.json', 'utf8')))
+    var norm = api.normalize(graph)
+    expect(norm.nodes().length).to.equal(graph.nodes().length)
+  })
 })

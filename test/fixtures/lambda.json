@@ -1,0 +1,737 @@
+{
+  "options": {
+    "directed": true,
+    "multigraph": true,
+    "compound": true
+  },
+  "nodes": [
+    {
+      "v": "stdout_0",
+      "value": {
+        "id": "io/stdout",
+        "version": "0.3.0",
+        "inputPorts": {
+          "input": "string"
+        },
+        "outputPorts": {},
+        "settings": {
+          "sideEffects": true,
+          "argumentOrdering": [
+            "input"
+          ]
+        },
+        "atomic": true,
+        "isSink": true,
+        "path": [],
+        "branchPath": "stdout_0",
+        "branch": "stdout_0",
+        "name": "stdout_0",
+        "recursive": false
+      }
+    },
+    {
+      "v": "number_to_string_1",
+      "value": {
+        "id": "translator/number_to_string",
+        "version": "0.2.0",
+        "inputPorts": {
+          "input": "number"
+        },
+        "outputPorts": {
+          "output": "string"
+        },
+        "atomic": true,
+        "settings": {
+          "argumentOrdering": [
+            "input",
+            "output"
+          ]
+        },
+        "path": [],
+        "branchPath": "number_to_string_1",
+        "branch": "number_to_string_1",
+        "name": "number_to_string_1",
+        "recursive": false
+      }
+    },
+    {
+      "v": "apply_2",
+      "value": {
+        "id": "functional/apply",
+        "version": "0.3.0",
+        "inputPorts": {
+          "fn": "generic",
+          "value": "generic"
+        },
+        "outputPorts": {
+          "result": "generic"
+        },
+        "implementation": {
+          "nodes": [
+            {
+              "id": "functional/call",
+              "version": "0.2.0",
+              "inputPorts": {
+                "fn": "function"
+              },
+              "outputPorts": {
+                "result": "function:return"
+              },
+              "atomic": true,
+              "specialForm": true,
+              "settings": {
+                "argumentOrdering": [
+                  "fn",
+                  "result"
+                ]
+              },
+              "path": [
+                {
+                  "meta": "functional/apply",
+                  "branch": "apply_2",
+                  "version": "0.3.0",
+                  "branchPath": "apply_2"
+                }
+              ],
+              "parent": "apply_2",
+              "branchPath": "apply_2:call_0",
+              "branch": "call_0",
+              "recursive": false
+            },
+            {
+              "id": "functional/partial",
+              "version": "0.2.1",
+              "inputPorts": {
+                "fn": "function",
+                "value": "function:arg"
+              },
+              "outputPorts": {
+                "result": "function:partial"
+              },
+              "atomic": true,
+              "specialForm": true,
+              "settings": {
+                "argumentOrdering": [
+                  "fn",
+                  "value",
+                  "result"
+                ]
+              },
+              "path": [
+                {
+                  "meta": "functional/apply",
+                  "branch": "apply_2",
+                  "version": "0.3.0",
+                  "branchPath": "apply_2"
+                }
+              ],
+              "params": {
+                "partial": 0
+              },
+              "parent": "apply_2",
+              "branchPath": "apply_2:partial_1",
+              "branch": "partial_1",
+              "recursive": false
+            }
+          ],
+          "edges": [
+            {
+              "from": "fn",
+              "to": "partial_1:fn"
+            },
+            {
+              "from": "value",
+              "to": "partial_1:value"
+            },
+            {
+              "from": "partial_1:result",
+              "to": "call_0:fn"
+            },
+            {
+              "from": "call_0:result",
+              "to": "result"
+            }
+          ]
+        },
+        "settings": {
+          "argumentOrdering": [
+            "fn",
+            "value",
+            "result"
+          ]
+        },
+        "path": [],
+        "branchPath": "apply_2",
+        "branch": "apply_2",
+        "name": "apply_2",
+        "recursive": false
+      }
+    },
+    {
+      "v": "apply_2:call_0",
+      "value": {
+        "id": "functional/call",
+        "version": "0.2.0",
+        "inputPorts": {
+          "fn": "function"
+        },
+        "outputPorts": {
+          "result": "function:return"
+        },
+        "atomic": true,
+        "specialForm": true,
+        "settings": {
+          "argumentOrdering": [
+            "fn",
+            "result"
+          ]
+        },
+        "path": [
+          {
+            "meta": "functional/apply",
+            "branch": "apply_2",
+            "version": "0.3.0",
+            "branchPath": "apply_2"
+          }
+        ],
+        "parent": "apply_2",
+        "branchPath": "apply_2:call_0",
+        "branch": "call_0",
+        "recursive": false
+      },
+      "parent": "apply_2"
+    },
+    {
+      "v": "apply_2:partial_1",
+      "value": {
+        "id": "functional/partial",
+        "version": "0.2.1",
+        "inputPorts": {
+          "fn": "function",
+          "value": "function:arg"
+        },
+        "outputPorts": {
+          "result": "function:partial"
+        },
+        "atomic": true,
+        "specialForm": true,
+        "settings": {
+          "argumentOrdering": [
+            "fn",
+            "value",
+            "result"
+          ]
+        },
+        "path": [
+          {
+            "meta": "functional/apply",
+            "branch": "apply_2",
+            "version": "0.3.0",
+            "branchPath": "apply_2"
+          }
+        ],
+        "params": {
+          "partial": 0
+        },
+        "parent": "apply_2",
+        "branchPath": "apply_2:partial_1",
+        "branch": "partial_1",
+        "recursive": false
+      },
+      "parent": "apply_2"
+    },
+    {
+      "v": "lambda_3",
+      "value": {
+        "id": "functional/lambda",
+        "version": "0.2.0",
+        "inputPorts": {},
+        "outputPorts": {
+          "fn": "function"
+        },
+        "atomic": true,
+        "settings": {
+          "argumentOrdering": [
+            "fn"
+          ]
+        },
+        "path": [],
+        "params": {
+          "implementation": "lambda_3:lambda_3_impl"
+        },
+        "branchPath": "lambda_3",
+        "branch": "lambda_3",
+        "isLambda": true,
+        "data": {
+          "outputPorts": {
+            "value_0": "generic"
+          },
+          "settings": {
+            "argumentOrdering": [
+              "x",
+              "value_0"
+            ]
+          },
+          "inputPorts": {
+            "x": "generic"
+          },
+          "implementation": {
+            "nodes": [
+              {
+                "id": "math/add",
+                "version": "0.3.0",
+                "inputPorts": {
+                  "s1": "number",
+                  "s2": "number"
+                },
+                "outputPorts": {
+                  "sum": "number"
+                },
+                "atomic": true,
+                "settings": {
+                  "argumentOrdering": [
+                    "s1",
+                    "s2",
+                    "sum"
+                  ]
+                },
+                "path": [
+                  {
+                    "meta": "functional/lambda",
+                    "branch": "lambda_3",
+                    "version": "0.2.0",
+                    "branchPath": "lambda_3"
+                  },
+                  {
+                    "meta": "lambda_3_impl",
+                    "branch": "lambda_3_impl",
+                    "branchPath": "lambda_3:lambda_3_impl"
+                  }
+                ],
+                "parent": "lambda_3:lambda_3_impl",
+                "branchPath": "lambda_3:lambda_3_impl:add_4",
+                "branch": "add_4",
+                "recursive": false
+              },
+              {
+                "id": "math/const",
+                "version": "0.3.0",
+                "inputPorts": {},
+                "outputPorts": {
+                  "output": "number"
+                },
+                "atomic": true,
+                "settings": {
+                  "argumentOrdering": [
+                    "output"
+                  ]
+                },
+                "path": [
+                  {
+                    "meta": "functional/lambda",
+                    "branch": "lambda_3",
+                    "version": "0.2.0",
+                    "branchPath": "lambda_3"
+                  },
+                  {
+                    "meta": "lambda_3_impl",
+                    "branch": "lambda_3_impl",
+                    "branchPath": "lambda_3:lambda_3_impl"
+                  }
+                ],
+                "params": {
+                  "value": 1
+                },
+                "parent": "lambda_3:lambda_3_impl",
+                "branchPath": "lambda_3:lambda_3_impl:const(1)_5",
+                "branch": "const(1)_5",
+                "recursive": false
+              }
+            ],
+            "edges": [
+              {
+                "from": "x",
+                "to": "add_4:s1"
+              },
+              {
+                "from": "const(1)_5:output",
+                "to": "add_4:s2"
+              },
+              {
+                "from": "add_4:sum",
+                "to": "value_0"
+              }
+            ]
+          },
+          "id": "lambda_3_impl",
+          "externalComponent": true,
+          "path": [
+            {
+              "meta": "functional/lambda",
+              "branch": "lambda_3",
+              "version": "0.2.0",
+              "branchPath": "lambda_3"
+            }
+          ],
+          "parent": "lambda_3",
+          "branchPath": "lambda_3:lambda_3_impl",
+          "branch": "lambda_3_impl",
+          "recursive": false
+        },
+        "name": "lambda_3",
+        "recursive": false
+      }
+    },
+    {
+      "v": "lambda_3:lambda_3_impl",
+      "value": {
+        "outputPorts": {
+          "value_0": "generic"
+        },
+        "settings": {
+          "argumentOrdering": [
+            "x",
+            "value_0"
+          ]
+        },
+        "inputPorts": {
+          "x": "generic"
+        },
+        "implementation": {
+          "nodes": [
+            {
+              "id": "math/add",
+              "version": "0.3.0",
+              "inputPorts": {
+                "s1": "number",
+                "s2": "number"
+              },
+              "outputPorts": {
+                "sum": "number"
+              },
+              "atomic": true,
+              "settings": {
+                "argumentOrdering": [
+                  "s1",
+                  "s2",
+                  "sum"
+                ]
+              },
+              "path": [
+                {
+                  "meta": "functional/lambda",
+                  "branch": "lambda_3",
+                  "version": "0.2.0",
+                  "branchPath": "lambda_3"
+                },
+                {
+                  "meta": "lambda_3_impl",
+                  "branch": "lambda_3_impl",
+                  "branchPath": "lambda_3:lambda_3_impl"
+                }
+              ],
+              "parent": "lambda_3:lambda_3_impl",
+              "branchPath": "lambda_3:lambda_3_impl:add_4",
+              "branch": "add_4",
+              "recursive": false
+            },
+            {
+              "id": "math/const",
+              "version": "0.3.0",
+              "inputPorts": {},
+              "outputPorts": {
+                "output": "number"
+              },
+              "atomic": true,
+              "settings": {
+                "argumentOrdering": [
+                  "output"
+                ]
+              },
+              "path": [
+                {
+                  "meta": "functional/lambda",
+                  "branch": "lambda_3",
+                  "version": "0.2.0",
+                  "branchPath": "lambda_3"
+                },
+                {
+                  "meta": "lambda_3_impl",
+                  "branch": "lambda_3_impl",
+                  "branchPath": "lambda_3:lambda_3_impl"
+                }
+              ],
+              "params": {
+                "value": 1
+              },
+              "parent": "lambda_3:lambda_3_impl",
+              "branchPath": "lambda_3:lambda_3_impl:const(1)_5",
+              "branch": "const(1)_5",
+              "recursive": false
+            }
+          ],
+          "edges": [
+            {
+              "from": "x",
+              "to": "add_4:s1"
+            },
+            {
+              "from": "const(1)_5:output",
+              "to": "add_4:s2"
+            },
+            {
+              "from": "add_4:sum",
+              "to": "value_0"
+            }
+          ]
+        },
+        "id": "lambda_3_impl",
+        "externalComponent": true,
+        "path": [
+          {
+            "meta": "functional/lambda",
+            "branch": "lambda_3",
+            "version": "0.2.0",
+            "branchPath": "lambda_3"
+          }
+        ],
+        "parent": "lambda_3",
+        "branchPath": "lambda_3:lambda_3_impl",
+        "branch": "lambda_3_impl",
+        "recursive": false
+      },
+      "parent": "lambda_3"
+    },
+    {
+      "v": "lambda_3:lambda_3_impl:add_4",
+      "value": {
+        "id": "math/add",
+        "version": "0.3.0",
+        "inputPorts": {
+          "s1": "number",
+          "s2": "number"
+        },
+        "outputPorts": {
+          "sum": "number"
+        },
+        "atomic": true,
+        "settings": {
+          "argumentOrdering": [
+            "s1",
+            "s2",
+            "sum"
+          ]
+        },
+        "path": [
+          {
+            "meta": "functional/lambda",
+            "branch": "lambda_3",
+            "version": "0.2.0",
+            "branchPath": "lambda_3"
+          },
+          {
+            "meta": "lambda_3_impl",
+            "branch": "lambda_3_impl",
+            "branchPath": "lambda_3:lambda_3_impl"
+          }
+        ],
+        "parent": "lambda_3:lambda_3_impl",
+        "branchPath": "lambda_3:lambda_3_impl:add_4",
+        "branch": "add_4",
+        "recursive": false
+      },
+      "parent": "lambda_3:lambda_3_impl"
+    },
+    {
+      "v": "lambda_3:lambda_3_impl:const(1)_5",
+      "value": {
+        "id": "math/const",
+        "version": "0.3.0",
+        "inputPorts": {},
+        "outputPorts": {
+          "output": "number"
+        },
+        "atomic": true,
+        "settings": {
+          "argumentOrdering": [
+            "output"
+          ]
+        },
+        "path": [
+          {
+            "meta": "functional/lambda",
+            "branch": "lambda_3",
+            "version": "0.2.0",
+            "branchPath": "lambda_3"
+          },
+          {
+            "meta": "lambda_3_impl",
+            "branch": "lambda_3_impl",
+            "branchPath": "lambda_3:lambda_3_impl"
+          }
+        ],
+        "params": {
+          "value": 1
+        },
+        "parent": "lambda_3:lambda_3_impl",
+        "branchPath": "lambda_3:lambda_3_impl:const(1)_5",
+        "branch": "const(1)_5",
+        "recursive": false
+      },
+      "parent": "lambda_3:lambda_3_impl"
+    },
+    {
+      "v": "string_to_number_6",
+      "value": {
+        "id": "translator/string_to_number",
+        "version": "0.2.0",
+        "inputPorts": {
+          "input": "string"
+        },
+        "outputPorts": {
+          "output": "number"
+        },
+        "atomic": true,
+        "settings": {
+          "argumentOrdering": [
+            "input",
+            "output"
+          ]
+        },
+        "path": [],
+        "branchPath": "string_to_number_6",
+        "branch": "string_to_number_6",
+        "name": "string_to_number_6",
+        "recursive": false
+      }
+    },
+    {
+      "v": "stdin_7",
+      "value": {
+        "id": "io/stdin",
+        "version": "0.3.0",
+        "inputPorts": {},
+        "outputPorts": {
+          "output": "string"
+        },
+        "settings": {
+          "sideEffects": true,
+          "argumentOrdering": [
+            "output"
+          ]
+        },
+        "atomic": true,
+        "path": [],
+        "branchPath": "stdin_7",
+        "branch": "stdin_7",
+        "name": "stdin_7",
+        "recursive": false
+      }
+    }
+  ],
+  "edges": [
+    {
+      "v": "lambda_3",
+      "w": "apply_2",
+      "value": {
+        "outPort": "fn",
+        "inPort": "fn"
+      }
+    },
+    {
+      "v": "stdin_7",
+      "w": "string_to_number_6",
+      "value": {
+        "outPort": "output",
+        "inPort": "input"
+      }
+    },
+    {
+      "v": "string_to_number_6",
+      "w": "apply_2",
+      "value": {
+        "outPort": "output",
+        "inPort": "value"
+      }
+    },
+    {
+      "v": "apply_2",
+      "w": "number_to_string_1",
+      "value": {
+        "outPort": "result",
+        "inPort": "input"
+      }
+    },
+    {
+      "v": "number_to_string_1",
+      "w": "stdout_0",
+      "value": {
+        "outPort": "output",
+        "inPort": "input"
+      }
+    },
+    {
+      "v": "apply_2",
+      "w": "apply_2:partial_1",
+      "name": "apply_2:fn→apply_2:partial_1:fn",
+      "value": {
+        "outPort": "fn",
+        "inPort": "fn"
+      }
+    },
+    {
+      "v": "apply_2",
+      "w": "apply_2:partial_1",
+      "name": "apply_2:value→apply_2:partial_1:value",
+      "value": {
+        "outPort": "value",
+        "inPort": "value"
+      }
+    },
+    {
+      "v": "apply_2:partial_1",
+      "w": "apply_2:call_0",
+      "name": "apply_2:partial_1:result→apply_2:call_0:fn",
+      "value": {
+        "outPort": "result",
+        "inPort": "fn"
+      }
+    },
+    {
+      "v": "apply_2:call_0",
+      "w": "apply_2",
+      "name": "apply_2:call_0:result→apply_2:result",
+      "value": {
+        "outPort": "result",
+        "inPort": "result"
+      }
+    },
+    {
+      "v": "lambda_3:lambda_3_impl",
+      "w": "lambda_3:lambda_3_impl:add_4",
+      "name": "lambda_3:lambda_3_impl:x→lambda_3:lambda_3_impl:add_4:s1",
+      "value": {
+        "outPort": "x",
+        "inPort": "s1"
+      }
+    },
+    {
+      "v": "lambda_3:lambda_3_impl:const(1)_5",
+      "w": "lambda_3:lambda_3_impl:add_4",
+      "name": "lambda_3:lambda_3_impl:const(1)_5:output→lambda_3:lambda_3_impl:add_4:s2",
+      "value": {
+        "outPort": "output",
+        "inPort": "s2"
+      }
+    },
+    {
+      "v": "lambda_3:lambda_3_impl:add_4",
+      "w": "lambda_3:lambda_3_impl",
+      "name": "lambda_3:lambda_3_impl:add_4:sum→lambda_3:lambda_3_impl:value_0",
+      "value": {
+        "outPort": "sum",
+        "inPort": "value_0"
+      }
+    }
+  ]
+}
