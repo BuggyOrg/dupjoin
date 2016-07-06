@@ -121,6 +121,8 @@ describe('Out edges deduplication', () => {
 
     expect(newGraph.edges()).to.have.length(3)
     expect(newGraph.parent(idNode)).to.equal('nop_1')
+    expect(newGraph.node(idNode).inputPorts.input).to.equal('generic')
+    expect(newGraph.node(idNode).outputPorts.output).to.equal('generic')
 
     const edge1 = newGraph.edge(newGraph.edges().filter((e) => e.v === 'nop_1' && e.w === idNode)[0])
     const edge2 = newGraph.edge(newGraph.edges().filter((e) => e.v === idNode && e.w === 'nop_1')[0])

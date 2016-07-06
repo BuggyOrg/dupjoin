@@ -192,7 +192,7 @@ function rewriteEdgesThroughCompoundNodes (jsonGraph) {
           input: compound.outputPorts[edge.inPort]
         },
         outputPorts: {
-          output: compound.outputPorts[edge.outPort]
+          output: compound.inputPorts[edge.outPort]
         },
         settings: {
           argumentOrdering: ['input', 'output']
