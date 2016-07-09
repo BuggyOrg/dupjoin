@@ -95,6 +95,7 @@ function edge (from, to) {
   return {
     v: from.node,
     w: to.node,
+    name: from.node + '@' + from.port + '→' + to.node + '@' + to.node,
     value: {
       outPort: from.port,
       inPort: to.port
