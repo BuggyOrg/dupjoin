@@ -2,6 +2,12 @@
 import {utils, walk, graph as graphAPI} from '@buggyorg/graphtools'
 import _ from 'lodash'
 
+const defaultOptions = {
+  createDuplicatesAndJoins: true,
+  createIdNodes: true,
+  addConsumeNodes: true
+}
+
 export function multipleOuts (graph) {
   return _(graph.nodes())
     .map((n) =>
@@ -263,12 +269,7 @@ function addConsumeForUnusedPorts (jsonGraph) {
   return graphAPI.toJSON(graph)
 }
 
-export function normalize (graph) {
-  if (!utils.isNPG(graph)) {
-    throw new Error('Cannot normalize non NPG.')
-  }
-
-  var editGraph = graphAPI.toJSON(graph)
+function createDupJoins (editGraph, graph) {
   var multiOuts = multipleOuts(graph)
   var multiIns = multipleIns(graph)
   var dupsOut = _.reduce(_.compact(_.map(multiOuts, (e) => {
@@ -292,9 +293,26 @@ export function normalize (graph) {
 
   editGraph.nodes = _.compact(_.concat(editGraph.nodes, dupsIn.nodes, dupsOut.nodes))
   editGraph.edges = _.compact(_.concat(oldEdges, dupsIn.edges, dupsOut.edges))
+  return editGraph
+}
 
-  editGraph = rewriteEdgesThroughCompoundNodes(editGraph)
-  editGraph = addConsumeForUnusedPorts(editGraph)
+export function normalize (graph, options) {
+  options = options || {}
+  options = _.merge({}, defaultOptions, options)
+  if (!utils.isNPG(graph)) {
+    throw new Error('Cannot normalize non NPG.')
+  }
+
+  var editGraph = graphAPI.toJSON(graph)
+  if (options.createDuplicatesAndJoins) {
+    editGraph = createDupJoins(editGraph, graph)
+  }
+  if (options.createIdNodes) {
+    editGraph = rewriteEdgesThroughCompoundNodes(editGraph)
+  }
+  if (options.addConsumeNodes) {
+    editGraph = addConsumeForUnusedPorts(editGraph)
+  }
 
   return graphAPI.importJSON(editGraph)
 }
